@@ -1,0 +1,176 @@
+CREATE DATABASE odontologia;
+USE odontologia;
+
+CREATE TABLE medicamento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE pais (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE ciudad (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    pais_id INT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (pais_id) REFERENCES pais(id)
+);
+
+CREATE TABLE especialidad (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE tratamiento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    costo DECIMAL(8,2),
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE diagnostico (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE procedimiento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    costo DECIMAL(8,2),
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE seguro (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE promocion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    descuento DECIMAL(8,2),
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE role (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo'
+);
+
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    correo VARCHAR(255) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    role_id INT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (role_id) REFERENCES role(id)
+);
+
+CREATE TABLE persona (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    cargo VARCHAR(255),
+    ciudad_id INT,
+    usuario_id INT,
+    especialidad_id INT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (ciudad_id) REFERENCES ciudad(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    FOREIGN KEY (especialidad_id) REFERENCES especialidad(id)
+);
+
+CREATE TABLE paciente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    persona_id INT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (persona_id) REFERENCES persona(id)
+);
+
+CREATE TABLE agenda (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    persona_id INT,
+    fecha DATETIME,
+    paciente_id INT,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (persona_id) REFERENCES persona(id),
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+);
+
+CREATE TABLE cita (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    agenda_id INT,
+    fecha_reserva DATETIME,
+    estado_cita ENUM('reservada','confirmada','anulada') DEFAULT 'reservada',
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (agenda_id) REFERENCES agenda(id)
+);
+
+CREATE TABLE recordatorio (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cita_id INT,
+    mensaje TEXT,
+    fecha_envio DATETIME,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (cita_id) REFERENCES cita(id)
+);
+
+CREATE TABLE documento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id INT,
+    tipo_documento VARCHAR(255),
+    archivo BLOB,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+);
+
+
